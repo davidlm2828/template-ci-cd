@@ -30,14 +30,6 @@ jobs:
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Terraform-docs | Generate documentation
-      uses: terraform-docs/gh-actions@v1.3.0
-      with:
-        working-dir: ./infra
-        output-file: README.md
-        output-method: inject
-        git-push: "true"
-
     - name: Terraform | Check required version
       run: |
         if [ -f versions.tf ];
@@ -67,6 +59,11 @@ jobs:
           }" >> provider.tf
           cat provider.tf
 
+    # - name: Render terraform docs inside the README.md and push changes back to PR branch
+    #   uses: terraform-docs/gh-actions@v1.3.0
+    #   with:
+    #     working-dir: ./infra
+
     - name: Terraform | Initialize backend
       run: terraform init
 
@@ -86,7 +83,6 @@ jobs:
       name: Setup TFLint
       with:
         tflint_version: v0.52.0
-
     - name: Show version
       run: tflint --version
 
@@ -109,14 +105,6 @@ jobs:
 
     - name: Terraform | Show to json file
       run: terraform show -json tfplan.binary > plan.json
-
-    - name: Infracost | Setup
-      uses: infracost/actions/setup@v3
-      with:
-        api-key: ${{ secrets.INFRACOST_API_KEY }}
-
-    - name: Infracost | Generate JSON
-      run: infracost breakdown --path plan.json
 
     - name: Terraform Destroy
       if: env.DESTROY == 'true'
