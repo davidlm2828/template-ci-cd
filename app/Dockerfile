@@ -8,7 +8,8 @@ RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 WORKDIR /app
 
 # Copiar os arquivos da pasta local para dentro do container
-COPY app.py Dockerfile ecs-task-definition.json requirements.txt sonar-project.properties test.py /app
+#COPY app.py Dockerfile ecs-task-definition.json requirements.txt sonar-project.properties test.py /app
+COPY . /app
 
 # Instalar as dependências de Python de acordo com o que foi desenvolvido na aplicação e que está declarado no arquivo requirements.txt.
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
